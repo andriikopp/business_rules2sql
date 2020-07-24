@@ -30,9 +30,9 @@ let domain = function(title) {
 		} else if (dateTimeTags.includes(token)) {
 			return 'DATETIME'
 		} else if (numberTags.includes(token)) {
-			return 'DECIMAL(8,2)'
+			return 'DECIMAL'
 		} else if (textTags.includes(token)) {
-			return 'VARCHAR(255)'
+			return 'TEXT'
 		}
 	}
 
