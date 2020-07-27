@@ -18,24 +18,28 @@ var numberTags = ['number', 'num', 'value', 'price', 'max', 'min', 'rate', 'age'
 let domain = function(title) {
 	let tokens = title.split('_')
 
-	let dateTimeOccurrence = 0
-	let numberOccurrence = 0
+	let dateTimeFreq = 0, numberFreq = 0
 
-	for (let tag in dateTimeTags) {
-		if (tokens.includes(dateTimeTags[tag])) {
-			dateTimeOccurrence++
+	for (let token in tokens) {
+		token = tokens[token]
+
+		if (dateTimeTags.includes(token)) {
+			dateTimeFreq++
+		}
+
+		if (numberTags.includes(token)) {
+			numberFreq++
 		}
 	}
 
-	for (let tag in numberTags) {
-		if (tokens.includes(numberTags[tag])) {
-			numberOccurrence++
-		}
-	}
+	dateTimeFreq /= tokens.length
+	numberFreq /= tokens.length
 
-	if (dateTimeOccurrence > numberOccurrence) {
+	console.log([title, dateTimeFreq, numberFreq])
+
+	if (dateTimeFreq > numberFreq) {
 		return 'DATETIME'
-	} else if (numberOccurrence > dateTimeOccurrence) {
+	} else if (numberFreq > dateTimeFreq) {
 		return 'DECIMAL'
 	} else {
 		return 'TEXT'
