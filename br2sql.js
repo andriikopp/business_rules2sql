@@ -18,24 +18,24 @@ var numberTags = ['number', 'num', 'value', 'price', 'max', 'min', 'rate', 'age'
 let domain = function(title) {
 	let tokens = title.split('_')
 
-	let dateTimeDist = 0
-	let numberDist = 0
+	let dateTimeOccurrence = 0
+	let numberOccurrence = 0
 
 	for (let tag in dateTimeTags) {
 		if (tokens.includes(dateTimeTags[tag])) {
-			dateTimeDist++
+			dateTimeOccurrence++
 		}
 	}
 
 	for (let tag in numberTags) {
 		if (tokens.includes(numberTags[tag])) {
-			numberDist++
+			numberOccurrence++
 		}
 	}
 
-	if (dateTimeDist > numberDist) {
+	if (dateTimeOccurrence > numberOccurrence) {
 		return 'DATETIME'
-	} else if (numberDist > dateTimeDist) {
+	} else if (numberOccurrence > dateTimeOccurrence) {
 		return 'DECIMAL'
 	} else {
 		return 'TEXT'
