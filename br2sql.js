@@ -15,6 +15,8 @@ var dateTimeTags = ['time', 'date', 'from', 'to', 'end', 'start', 'until', 'due'
 
 var numberTags = ['number', 'num', 'value', 'price', 'max', 'min', 'rate', 'age', 'amount', 'rating', 'year', 'salary', 'frequency', 'payment', 'offset', 'loan', 'quantity', 'capacity', 'percentage', 'billing', 'increment', 'cash', 'cost', 'unit', 'discount', 'dose', 'exchange', 'radius', 'interest', 'latitude', 'longitude', 'median', 'point', 'earned', 'count', 'total']
 
+var uidsTags = ['id', 'identifier', 'unique', 'uid', 'isbn', 'issn', 'doi', 'orcid', 'ssn', 'vin', 'tin', 'sku', 'oid', 'uuid']
+
 let domain = function(title) {
 	let tokens = title.split('_')
 
@@ -35,15 +37,31 @@ let domain = function(title) {
 	dateTimeFreq /= tokens.length
 	numberFreq /= tokens.length
 
-	console.log([title, dateTimeFreq, numberFreq])
-
 	if (dateTimeFreq > numberFreq) {
 		return 'DATETIME'
 	} else if (numberFreq > dateTimeFreq) {
-		return 'DECIMAL'
+		return 'DECIMAL(8,2)'
 	} else {
-		return 'TEXT'
+		return 'VARCHAR(255)'
 	}
+}
+
+let p = x => 1 / (1 + Math.exp(-x))
+
+let unique = function(title) {
+	let tokens = title.split('_')
+
+	let match = 0
+
+	for (let token in tokens) {
+		token = tokens[token]
+
+		if (uidsTags.includes(token)) {
+			match++
+		}
+	}
+
+	return p(match) > 0.5
 }
 
 let businessRules = businessRulesText.split('.')
@@ -156,6 +174,16 @@ for (let table in tables) {
 			alterForeignKey = `ALTER TABLE \`${table}\` ADD FOREIGN KEY (\`${tables[table].foreign[i].key}\`) REFERENCES \`${tables[table].foreign[i].table}\`(\`${tables[table].foreign[i].key}\`);`
 
 			script += alterForeignKey
+		}
+	}
+}
+
+for (let table in tables) {
+	for (let i in tables[table].fields) {
+		if (unique(tables[table].fields[i])) {
+			let alterUniqueIndex = `ALTER TABLE \`${table}\` ADD UNIQUE (\`${tables[table].fields[i]}\`);`
+
+			script += alterUniqueIndex
 		}
 	}
 }
