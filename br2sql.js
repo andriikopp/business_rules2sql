@@ -141,7 +141,7 @@ for (let table in tables) {
 }
 
 for (let table in tables) {
-	let alterPrimaryKey = `ALTER TABLE \`${table}\` ADD PRIMARY KEY (\`${tables[table].primary}\`);`
+	let alterPrimaryKey = `ALTER TABLE \`${table}\` MODIFY \`${tables[table].primary}\` INTEGER AUTO_INCREMENT PRIMARY KEY;`
 
 	script += alterPrimaryKey
 }
@@ -149,7 +149,11 @@ for (let table in tables) {
 for (let table in tables) {
 	if (tables[table].foreign.length > 0) {
 		for (let i in tables[table].foreign) {
-			let alterForeignKey = ` ALTER TABLE \`${table}\` ADD FOREIGN KEY (\`${tables[table].foreign[i].key}\`) REFERENCES \`${tables[table].foreign[i].table}\`(\`${tables[table].foreign[i].key}\`);`
+			let alterForeignKey = `ALTER TABLE \`${table}\` MODIFY \`${tables[table].foreign[i].key}\` INTEGER NOT NULL;`
+
+			script += alterForeignKey
+
+			alterForeignKey = `ALTER TABLE \`${table}\` ADD FOREIGN KEY (\`${tables[table].foreign[i].key}\`) REFERENCES \`${tables[table].foreign[i].table}\`(\`${tables[table].foreign[i].key}\`);`
 
 			script += alterForeignKey
 		}
