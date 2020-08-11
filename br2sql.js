@@ -1,5 +1,5 @@
 let dbName = 'DB_SYNTHESIS'
-let businessRulesText = 'Each supplier has address, email, phone. Some supplier is described as one person. Some supplier is described as one company. Each person has first name, last name, ssn. Each company has name, contact person, bank account. Each product has sku, title, amount, price. Each supplier is assigned to many contract. Each contract is assigned to many product. Each contract has number, date, comment.'
+let businessRulesText = 'Each supplier has address, email, phone. Some supplier is described as one person. Some supplier is described as one company. Each person has first name, last name, ssn. Each company has name, contact person, bank account. Each product has sku, title, amount, price, discount. Each supplier is assigned to many contract. Each contract is assigned to many product. Each contract has number, date, comment.'
 
 let fact = function(rule) {
 	let regex = /(each|some)\s+(.+)\s+((is).+)\s+(one|many)\s+(.+)/g
@@ -16,6 +16,13 @@ var dateTimeTags = ['time', 'date', 'from', 'to', 'end', 'start', 'until', 'due'
 var numberTags = ['number', 'num', 'value', 'price', 'max', 'min', 'rate', 'age', 'amount', 'rating', 'year', 'salary', 'frequency', 'payment', 'offset', 'loan', 'quantity', 'capacity', 'percentage', 'billing', 'increment', 'cash', 'cost', 'unit', 'discount', 'dose', 'exchange', 'radius', 'interest', 'latitude', 'longitude', 'median', 'point', 'earned', 'count', 'total']
 
 var uidsTags = ['id', 'identifier', 'unique', 'uid', 'isbn', 'issn', 'doi', 'orcid', 'ssn', 'vin', 'tin', 'sku', 'oid', 'uuid']
+
+var constraints = {
+	'age': '`age` >= 0',
+	'price': '`price` > 0',
+	'discount': '`discount` >= 0 AND `discount` <= 100',
+	'amount': '`amount` > 0'
+}
 
 let domain = function(title) {
 	let tokens = title.split('_')
@@ -188,6 +195,35 @@ for (let table in tables) {
 	}
 }
 
-script = script.replace(/\s+/g , ' ')
+let checkFields = {}
+
+for (let table in tables) {
+	checkFields[table] = []
+
+	for (let i in tables[table].fields) {
+		if (tables[table].fields[i] in constraints) {
+			checkFields[table].push(tables[table].fields[i])
+		}
+	}
+}
+
+for (let table in checkFields) {
+	if (checkFields[table].length > 0) {
+		let alterConstraint = `ALTER TABLE \`${table}\` ADD CONSTRAINT \`${table}_constraint\` CHECK (`
+
+		for (let i = 0; i < checkFields[table].length; i++) {
+			alterConstraint += '(' + constraints[checkFields[table][i]] + ')'
+
+			if (i < checkFields[table].length - 1) {
+				alterConstraint += ' AND '
+			}
+		}
+
+		script += alterConstraint + ');'
+	}
+}
+
+script = script.replace(/\s+/g, ' ')
+script = script.split(';').join(';\n')
 
 console.log(script)
