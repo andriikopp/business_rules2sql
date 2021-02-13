@@ -1,0 +1,12 @@
+body {
+    font-family: 'Kanit', sans-serif;
+}
+
+.custom-container {
+    margin: 0px;
+    max-width: 100%;
+}
+
+.custom-editor {
+    height: 70vh;
+}

@@ -4,8 +4,10 @@
 <head>
     <meta charset="utf-8">
 
-    <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="highlightjs/styles/default.css">
+    <link href="https://fonts.googleapis.com/css?family=Kanit" rel="stylesheet" />
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/main.css">
 
     <script src="highlightjs/highlight.pack.js"></script>
     <script>
@@ -29,7 +31,7 @@
             <b class="text-muted">BR2SQL</b> – Translate Business Rules into a Database Schema
         </a>
     </nav>
-    <div class="container" style="margin: 0px; max-width: 100%;">
+    <div class="container custom-container">
         <div class="row">
             <div class="col-4">
                 <div class="form-group">
@@ -55,7 +57,7 @@
             </div>
             <div class="col-6">
                 <label for="sqlStatements">SQL Statements</label>
-                <pre><code class="lang-sql" id="sqlStatements" style="height: 70vh;"></code></pre>
+                <pre><code class="lang-sql custom-editor" id="sqlStatements"></code></pre>
             </div>
             <div class="col-2">
                 <label>Database Settings</label>
@@ -116,7 +118,7 @@
     <script src="js/jquery-3.4.1.min.js"></script>
     <script src="js/popper.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
-    <script src="js/br2sql.js"></script>
+    <script src="js/main.js"></script>
 
     <script>
         $('#year').text(new Date().getFullYear());
