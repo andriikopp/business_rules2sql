@@ -46,11 +46,11 @@
                                 description" (one | many) "entity name".</small></label>
                     <br>
                     <label for="businessRules"><small><b>e.g.</b> Each student is given by many score.</small></label>
-                    <textarea class="form-control" id="businessRules" rows="12" onchange="translateBr2Sql();">Each student has full name, student card id, birth date, enrollment date. Each student is given by many score. Each course has title, semester, approval date. Each course is evaluated by many score. Each score has value, completion date.</textarea>
+                    <textarea class="form-control" id="businessRules" rows="12" onchange="translateBRToSQL();">Each student has full name, student card id, birth date, enrollment date. Each student is given by many score. Each course has title, semester, approval date. Each course is evaluated by many score. Each score has value, completion date.</textarea>
                 </div>
                 <div class="form-group">
-                    <button type="button" class="btn btn-secondary btn-sm" id="clearAll">Clear</button>
-                    <button type="submit" class="btn btn-secondary btn-sm" onclick="translateBr2Sql();">Translate</button>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="clearAll();">Clear</button>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="translateBRToSQL();">Translate</button>
                 </div>
                 <p><small>This service is a prototype created for academic purposes, therefore 
                     certain features may not work properly.</small></p>
@@ -63,20 +63,20 @@
                 <label>Database Settings</label>
                 <div class="form-group">
                     <label for="databaseName"><small><b>Database Name</b></small></label>
-                    <input type="text" class="form-control" id="databaseName" value="sample_db" onchange="translateBr2Sql();">
+                    <input type="text" class="form-control" id="databaseName" value="sample_db" onchange="translateBRToSQL();">
                 </div>
 
                 <label><small><b>Optional Scripts</b></small></label>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="includeDropDB" onchange="translateBr2Sql();" checked>
+                    <input class="form-check-input" type="checkbox" value="" id="includeDropDB" onchange="translateBRToSQL();" checked>
                     <label class="form-check-label" for="includeDropDB"><small>Drop database</small></label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="includeCreateDB" onchange="translateBr2Sql();" checked>
+                    <input class="form-check-input" type="checkbox" value="" id="includeCreateDB" onchange="translateBRToSQL();" checked>
                     <label class="form-check-label" for="includeCreateDB"><small>Create database</small></label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="includeDropTables" onchange="translateBr2Sql();">
+                    <input class="form-check-input" type="checkbox" value="" id="includeDropTables" onchange="translateBRToSQL();">
                     <label class="form-check-label" for="includeDropTables"><small>Drop tables</small></label>
                 </div>
                 <br>
@@ -118,7 +118,8 @@
     <script src="js/jquery-3.4.1.min.js"></script>
     <script src="js/popper.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
-    <script src="js/main.js"></script>
+
+    <script src="app/main.js"></script>
 
     <script>
         $('#year').text(new Date().getFullYear());
