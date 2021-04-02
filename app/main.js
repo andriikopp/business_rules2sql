@@ -1,60 +1,104 @@
 const attributeDomainsClassifier = {
-    dateTimeTags: ['time', 'date', 'from', 'to', 'end', 'start', 'until', 'due', 'arrival', 'departure', 'modified', 'created', 'deleted', 'issued', 'posted', 'published', 'received', 'sent', 'scheduled'],
-
-    numberTags: ['number', 'num', 'value', 'price', 'max', 'min', 'rate', 'age', 'amount', 'rating', 'year', 'salary', 'frequency', 'payment', 'offset', 'loan', 'quantity', 'capacity', 'percentage', 'billing', 'increment', 'cash', 'cost', 'unit', 'discount', 'dose', 'exchange', 'radius', 'interest', 'latitude', 'longitude', 'median', 'point', 'earned', 'count', 'total'],
+    vocabulary: {
+        'DateTime': [],
+        'Number': [],
+        'Text': [],
+        'Boolean': []
+    },
 
     suggestDomain: function(attributeTitle) {
-        const tokens = attributeTitle.split('_');
-
-        let dateTimeFreq = 0;
-        let numberFreq = 0;
-
-        for (let token in tokens) {
-            token = tokens[token];
-
-            if (this.dateTimeTags.includes(token)) {
-                dateTimeFreq++;
-            }
-
-            if (this.numberTags.includes(token)) {
-                numberFreq++;
-            }
-        }
-
-        dateTimeFreq /= tokens.length;
-        numberFreq /= tokens.length;
-
-        if (dateTimeFreq > numberFreq) {
-            return 'DATETIME';
-        } else if (numberFreq > dateTimeFreq) {
-            return 'DECIMAL(8,2)';
+        if (localStorage.getItem('domainVocabulary') === null) {
+            localStorage.setItem('domainVocabulary', JSON.stringify(this.vocabulary));
         } else {
-            return 'VARCHAR(255)';
+            this.vocabulary = JSON.parse(localStorage.getItem('domainVocabulary'));
         }
+
+        const dataTypes = ['DATETIME', 'DECIMAL(8,2)', 'VARCHAR(255)', 'TINYINT(1)'];
+        const domainNames = ['DateTime', 'Number', 'Text', 'Boolean'];
+
+        const domains = [];
+
+        if (!this.vocabulary['DateTime'].includes(attributeTitle) &&
+            !this.vocabulary['Number'].includes(attributeTitle) &&
+            !this.vocabulary['Text'].includes(attributeTitle) &&
+            !this.vocabulary['Boolean'].includes(attributeTitle)) {
+
+            const userDomain = prompt(`Input the domain for the attribute "${attributeTitle}" 
+                (0 - DateTime, 1 - Number, 2 - Text, 3 - Boolean)`, '0');
+
+            this.vocabulary[domainNames[userDomain]].push(attributeTitle);
+            localStorage.setItem('domainVocabulary', JSON.stringify(this.vocabulary));
+
+            return dataTypes[userDomain];
+        }
+
+        if (this.vocabulary['DateTime'].includes(attributeTitle)) {
+            domains[0]++;
+        }
+
+        if (this.vocabulary['Number'].includes(attributeTitle)) {
+            domains[1]++;
+        }
+
+        if (this.vocabulary['Text'].includes(attributeTitle)) {
+            domains[2]++;
+        }
+
+        if (this.vocabulary['Boolean'].includes(attributeTitle)) {
+            domains[3]++;
+        }
+
+        const suggested = dataTypes[domains.map((x, i) => [x, i]).reduce((r, a) => (a[0] > r[0] ? a : r))[1]];
+
+        if (!confirm(`Use the "${suggested}" domain for the attribute "${attributeTitle}"?`)) {
+            const userDomain = prompt(`Input the domain for the attribute "${attributeTitle}" 
+                (0 - DateTime, 1 - Number, 2 - Text, 3 - Boolean)`, '0');
+
+            return dataTypes[userDomain];
+        }
+
+        return suggested;
     }
 };
 
 const attributeUniqueClassifier = {
-    uidsTags: ['id', 'identifier', 'unique', 'uid', 'isbn', 'issn', 'doi', 'orcid', 'ssn', 'vin', 'tin', 'sku', 'oid', 'uuid'],
+    vocabulary: [],
 
     logit: function(x) {
         return 1 / (1 + Math.exp(-x));
     },
 
     suggestUnique: function(attributeTitle) {
-        const tokens = attributeTitle.split('_');
-
-        let match = 0;
-
-        for (let token in tokens) {
-            token = tokens[token];
-
-            if (this.uidsTags.includes(token)) {
-                match++;
-            }
+        if (localStorage.getItem('uniqueVocabulary') === null) {
+            localStorage.setItem('uniqueVocabulary', JSON.stringify(this.vocabulary));
+        } else {
+            this.vocabulary = JSON.parse(localStorage.getItem('uniqueVocabulary'));
         }
 
-        return this.logit(match) > 0.5;
+        if (!this.vocabulary.includes(attributeTitle)) {
+            const userKey = confirm(`Create the unique key for the attribute "${attributeTitle}"?`);
+
+            if (userKey) {
+                this.vocabulary.push(attributeTitle);
+                localStorage.setItem('uniqueVocabulary', JSON.stringify(this.vocabulary));
+            }
+
+            return userKey;
+        }
+
+        let x = 0;
+
+        if (this.vocabulary.includes(attributeTitle)) {
+            x++;
+        }
+
+        let uniqueness = null;
+
+        if (this.logit(x) > 0.5) {
+            return confirm(`Agree to make the attribute "${attributeTitle}" unique?`);
+        }
+
+        return !confirm(`Leave the attribute "${attributeTitle}" as non-unique?`);
     }
 };
 
@@ -250,5 +294,3 @@ const copySQL = function() {
         alert('SQL statements copied to clipboard!')
     });
 };
-
-translateBRToSQL();
