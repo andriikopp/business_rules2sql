@@ -158,26 +158,26 @@ const brToSQLTranslator = {
                 this.script += `DROP TABLE IF EXISTS \`${table}\`;`;
             }
 
-            let createTable = `CREATE TABLE \`${table}\` ( \`${this.tables[table].primary}\` INTEGER`;
+            let createTable = `CREATE TABLE \`${table}\` (\n\t\`${this.tables[table].primary}\` INTEGER`;
 
             if (this.tables[table].foreign.length > 0) {
                 for (const i in this.tables[table].foreign) {
                     if (this.tables[table].foreign[i].key !== this.tables[table].primary) {
-                        createTable += `, \`${this.tables[table].foreign[i].key}\` INTEGER`;
+                        createTable += `,\n\t\`${this.tables[table].foreign[i].key}\` INTEGER`;
                     }
                 }
             }
 
             for (const i in this.tables[table].fields) {
-                createTable += `, \`${this.tables[table].fields[i]}\` ${attributeDomainsClassifier.suggestDomain(this.tables[table].fields[i])}${attributeNotNullClassifier.suggestNotNull(this.tables[table].fields[i]) ? ' NOT NULL' : ''}`;
+                createTable += `,\n\t\`${this.tables[table].fields[i]}\` ${attributeDomainsClassifier.suggestDomain(this.tables[table].fields[i])}${attributeNotNullClassifier.suggestNotNull(this.tables[table].fields[i]) ? ' NOT NULL' : ''}`;
             }
 
-            createTable += ');';
+            createTable += '\n);';
             this.script += createTable;
         }
 
         for (const table in this.tables) {
-            const alterPrimaryKey = `ALTER TABLE \`${table}\` MODIFY \`${this.tables[table].primary}\` INTEGER AUTO_INCREMENT PRIMARY KEY;`;
+            const alterPrimaryKey = `ALTER TABLE \`${table}\`\nMODIFY \`${this.tables[table].primary}\` INTEGER AUTO_INCREMENT PRIMARY KEY;`;
 
             this.script += alterPrimaryKey;
         }
@@ -185,11 +185,11 @@ const brToSQLTranslator = {
         for (const table in this.tables) {
             if (this.tables[table].foreign.length > 0) {
                 for (const i in this.tables[table].foreign) {
-                    let alterForeignKey = `ALTER TABLE \`${table}\` MODIFY \`${this.tables[table].foreign[i].key}\` INTEGER NOT NULL;`;
+                    let alterForeignKey = `ALTER TABLE \`${table}\`\nMODIFY \`${this.tables[table].foreign[i].key}\` INTEGER NOT NULL;`;
 
                     this.script += alterForeignKey;
 
-                    alterForeignKey = `ALTER TABLE \`${table}\` ADD FOREIGN KEY (\`${this.tables[table].foreign[i].key}\`) REFERENCES \`${this.tables[table].foreign[i].table}\`(\`${this.tables[table].foreign[i].key}\`);`;
+                    alterForeignKey = `ALTER TABLE \`${table}\`\nADD FOREIGN KEY (\`${this.tables[table].foreign[i].key}\`) REFERENCES \`${this.tables[table].foreign[i].table}\`(\`${this.tables[table].foreign[i].key}\`);`;
 
                     this.script += alterForeignKey;
                 }
@@ -199,14 +199,13 @@ const brToSQLTranslator = {
         for (const table in this.tables) {
             for (const i in this.tables[table].fields) {
                 if (attributeUniqueClassifier.suggestUnique(this.tables[table].fields[i])) {
-                    const alterUniqueIndex = `ALTER TABLE \`${table}\` ADD UNIQUE (\`${this.tables[table].fields[i]}\`);`;
+                    const alterUniqueIndex = `ALTER TABLE \`${table}\`\nADD UNIQUE (\`${this.tables[table].fields[i]}\`);`;
 
                     this.script += alterUniqueIndex;
                 }
             }
         }
 
-        this.script = this.script.replace(/\s+/g, ' ');
         this.script = this.script.split(';').join(';\n\n');
     }
 };
