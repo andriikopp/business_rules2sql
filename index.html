@@ -14,21 +14,25 @@
         hljs.initHighlightingOnLoad();
     </script>
 
-    <title>BR2SQL – Translate Business Rules into SQL</title>
-    <meta name="title" content="BR2SQL – Translate Business Rules into SQL">
+    <title>BR2SQL — Translate Business Rules into SQL</title>
+    <meta name="title" content="BR2SQL — Translate Business Rules into SQL">
     <meta name="description" content="Free online service for business rules translation into a database components. Generates SQL DDL commands to create a database.">
+
     <meta name="keywords" content="database,sql,online,commands,components,rules,translation,ddl">
+
     <meta name="robots" content="index, follow">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="language" content="English">
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="icon" type="image/png" href="img/icon.png" />
 </head>
 
 <body>
     <nav class="navbar navbar-light bg-light">
         <a class="navbar-brand" href="javascript:void(0);">
-            <b class="text-muted">BR2SQL</b> – Translate Business Rules into a Database Schema
+            <b class="text-muted">BR2SQL</b> — Translate Business Rules into a Database Schema
         </a>
     </nav>
     <div class="container custom-container">
@@ -37,13 +41,15 @@
                 <div class="form-group">
                     <label for="businessRules">Business Rules</label>
                     <br>
-                    <label for="businessRules"><small><b>Attributes</b>: Each "entity name" has "attribute", "attribute", ...,
-                                "attribute".</small></label>
+                    <label for="businessRules"><small><b>Attributes</b>: Each "entity name" has "attribute",
+                            "attribute", ...,
+                            "attribute".</small></label>
                     <br>
-                    <label for="businessRules"><small><b>e.g.</b> Each student has full name, student card id, birth date, enrollment date.</small></label>
+                    <label for="businessRules"><small><b>e.g.</b> Each student has full name, student card id, birth
+                            date, enrollment date.</small></label>
                     <br>
                     <label for="businessRules"><small><b>Relationships</b>: (Each | Some) "entity name" is "relationship
-                                description" (one | many) "entity name".</small></label>
+                            description" (one | many) "entity name".</small></label>
                     <br>
                     <label for="businessRules"><small><b>e.g.</b> Each student is given by many score.</small></label>
                     <textarea class="form-control" id="businessRules" rows="12" onchange="translateBRToSQL();">Each student has full name, student card id, birth date, enrollment date. Each student is given by many score. Each course has title, semester, approval date. Each course is evaluated by many score. Each score has value, completion date.</textarea>
@@ -52,8 +58,8 @@
                     <button type="button" class="btn btn-secondary btn-sm" onclick="clearAll();">Clear</button>
                     <button type="button" class="btn btn-secondary btn-sm" onclick="translateBRToSQL();">Translate</button>
                 </div>
-                <p><small>This service is a prototype created for academic purposes, therefore 
-                    certain features may not work properly.</small></p>
+                <p><small>This service is a prototype created for academic purposes, therefore
+                        certain features may not work properly.</small></p>
             </div>
             <div class="col-6">
                 <label for="sqlStatements">SQL Statements</label>
@@ -101,17 +107,20 @@
 
                 <br>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-secondary btn-sm" onclick="copySQL();">Copy to Clipboard</button>
+                    <button type="submit" class="btn btn-secondary btn-sm" onclick="copySQL();">Copy to
+                        Clipboard</button>
                 </div>
-                <a href="https://github.com/br2sql" target="_blank"><small>Contact or Contribute</small></a>
+                <a href="https://github.com/andriikopp/business_rules2sql" target="_blank"><small>Contact or
+                        Contribute</small></a>
             </div>
         </div>
     </div>
 
     <nav class="navbar fixed-bottom navbar-light bg-light">
         <small>
-            <b class="text-muted">BR2SQL</b> <a href="https://creativecommons.org/licenses/by-nd/4.0/">CC BY-ND License</a> 
-                2020-<span id="year"></span>
+            <b class="text-muted">BR2SQL</b> <a href="https://creativecommons.org/licenses/by-nd/4.0/">CC BY-ND
+                License</a>
+            2020-<span id="year"></span>
         </small>
     </nav>
 
