@@ -1,104 +1,46 @@
 const attributeDomainsClassifier = {
     vocabulary: {
-        'DateTime': [],
-        'Number': [],
-        'Text': [],
+        'DateTime': ['birth_date', 'enrollment_date', 'completion_date', 'approval_date'],
+        'Number': ['value', 'semester'],
+        'Text': ['full_name', 'student_card_id', 'title'],
         'Boolean': []
     },
 
     suggestDomain: function(attributeTitle) {
-        if (localStorage.getItem('domainVocabulary') === null) {
-            localStorage.setItem('domainVocabulary', JSON.stringify(this.vocabulary));
-        } else {
-            this.vocabulary = JSON.parse(localStorage.getItem('domainVocabulary'));
-        }
-
         const dataTypes = ['DATETIME', 'DECIMAL(8,2)', 'VARCHAR(255)', 'TINYINT(1)'];
-        const domainNames = ['DateTime', 'Number', 'Text', 'Boolean'];
-
         const domains = [];
-
-        if (!this.vocabulary['DateTime'].includes(attributeTitle) &&
-            !this.vocabulary['Number'].includes(attributeTitle) &&
-            !this.vocabulary['Text'].includes(attributeTitle) &&
-            !this.vocabulary['Boolean'].includes(attributeTitle)) {
-
-            const userDomain = prompt(`Input the domain for the attribute "${attributeTitle}" 
-                (0 - DateTime, 1 - Number, 2 - Text, 3 - Boolean)`, '0');
-
-            this.vocabulary[domainNames[userDomain]].push(attributeTitle);
-            localStorage.setItem('domainVocabulary', JSON.stringify(this.vocabulary));
-
-            return dataTypes[userDomain];
-        }
 
         if (this.vocabulary['DateTime'].includes(attributeTitle)) {
             domains[0]++;
-        }
-
-        if (this.vocabulary['Number'].includes(attributeTitle)) {
+        } else if (this.vocabulary['Number'].includes(attributeTitle)) {
             domains[1]++;
-        }
-
-        if (this.vocabulary['Text'].includes(attributeTitle)) {
+        } else if (this.vocabulary['Text'].includes(attributeTitle)) {
+            domains[2]++;
+        } else if (this.vocabulary['Boolean'].includes(attributeTitle)) {
+            domains[3]++;
+        } else {
             domains[2]++;
         }
 
-        if (this.vocabulary['Boolean'].includes(attributeTitle)) {
-            domains[3]++;
-        }
-
-        const suggested = dataTypes[domains.map((x, i) => [x, i]).reduce((r, a) => (a[0] > r[0] ? a : r))[1]];
-
-        if (!confirm(`Use the "${suggested}" domain for the attribute "${attributeTitle}"?`)) {
-            const userDomain = prompt(`Input the domain for the attribute "${attributeTitle}" 
-                (0 - DateTime, 1 - Number, 2 - Text, 3 - Boolean)`, '0');
-
-            return dataTypes[userDomain];
-        }
-
-        return suggested;
+        return dataTypes[domains.map((x, i) => [x, i]).reduce((r, a) => (a[0] > r[0] ? a : r))[1]];
     }
 };
 
 const attributeUniqueClassifier = {
-    vocabulary: [],
+    vocabulary: ['student_card_id'],
 
     logit: function(x) {
         return 1 / (1 + Math.exp(-x));
     },
 
     suggestUnique: function(attributeTitle) {
-        if (localStorage.getItem('uniqueVocabulary') === null) {
-            localStorage.setItem('uniqueVocabulary', JSON.stringify(this.vocabulary));
-        } else {
-            this.vocabulary = JSON.parse(localStorage.getItem('uniqueVocabulary'));
-        }
-
-        if (!this.vocabulary.includes(attributeTitle)) {
-            const userKey = confirm(`Create the unique key for the attribute "${attributeTitle}"?`);
-
-            if (userKey) {
-                this.vocabulary.push(attributeTitle);
-                localStorage.setItem('uniqueVocabulary', JSON.stringify(this.vocabulary));
-            }
-
-            return userKey;
-        }
-
         let x = 0;
 
         if (this.vocabulary.includes(attributeTitle)) {
             x++;
         }
 
-        let uniqueness = null;
-
-        if (this.logit(x) > 0.5) {
-            return confirm(`Agree to make the attribute "${attributeTitle}" unique?`);
-        }
-
-        return !confirm(`Leave the attribute "${attributeTitle}" as non-unique?`);
+        return this.logit(x) > 0.5;
     }
 };
 
