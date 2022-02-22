@@ -1,39 +1,43 @@
 const attributeDomainsClassifier = {
-    vocabulary: {
-        'DateTime': ['birth_date', 'enrollment_date', 'completion_date', 'approval_date'],
-        'Number': ['value', 'semester'],
-        'Text': ['full_name', 'student_card_id', 'title'],
-        'Boolean': []
-    },
-
     suggestDomain: function(attributeTitle) {
-        const dataTypes = ['DATETIME', 'DECIMAL(8,2)', 'VARCHAR(255)', 'TINYINT(1)'];
-        const domains = [];
+        var dataType = 'VARCHAR(255)';
 
-        if (this.vocabulary['DateTime'].includes(attributeTitle)) {
-            domains[0]++;
-        } else if (this.vocabulary['Number'].includes(attributeTitle)) {
-            domains[1]++;
-        } else if (this.vocabulary['Text'].includes(attributeTitle)) {
-            domains[2]++;
-        } else if (this.vocabulary['Boolean'].includes(attributeTitle)) {
-            domains[3]++;
-        } else {
-            domains[2]++;
+        const LHS = Object.keys(DATA_TYPE_ASSOCIATION_RULES);
+
+        if (LHS.includes(attributeTitle)) {
+            dataType = DATA_TYPE_ASSOCIATION_RULES[attributeTitle]['type'];
         }
 
-        return dataTypes[domains.map((x, i) => [x, i]).reduce((r, a) => (a[0] > r[0] ? a : r))[1]];
+        return dataType;
     }
 };
 
 const attributeUniqueClassifier = {
-    vocabulary: ['student_card_id'],
+    vocabulary: UNIQUE_ATTRIBUTES,
 
     logit: function(x) {
         return 1 / (1 + Math.exp(-x));
     },
 
     suggestUnique: function(attributeTitle) {
+        let x = 0;
+
+        if (this.vocabulary.includes(attributeTitle)) {
+            x++;
+        }
+
+        return this.logit(x) > 0.5;
+    }
+};
+
+const attributeNotNullClassifier = {
+    vocabulary: NOT_NULL_ATTRIBUTES,
+
+    logit: function(x) {
+        return 1 / (1 + Math.exp(-x));
+    },
+
+    suggestNotNull: function(attributeTitle) {
         let x = 0;
 
         if (this.vocabulary.includes(attributeTitle)) {
@@ -165,7 +169,7 @@ const brToSQLTranslator = {
             }
 
             for (const i in this.tables[table].fields) {
-                createTable += `, \`${this.tables[table].fields[i]}\` ${attributeDomainsClassifier.suggestDomain(this.tables[table].fields[i])}`;
+                createTable += `, \`${this.tables[table].fields[i]}\` ${attributeDomainsClassifier.suggestDomain(this.tables[table].fields[i])}${attributeNotNullClassifier.suggestNotNull(this.tables[table].fields[i]) ? ' NOT NULL' : ''}`;
             }
 
             createTable += ');';
